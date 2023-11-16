@@ -57,10 +57,13 @@ pub type DiGraphMap<N, E> = GraphMap<N, E, Directed>;
 /// `GraphMap` does not allow parallel edges, but self loops are allowed.
 ///
 /// Depends on crate feature `graphmap` (default).
+#[cfg_attr(feature = "profiling", derive(allocative::Allocative))]
 #[derive(Clone)]
+#[cfg_attr(feature = "profiling", allocative(bound = "N: allocative::Allocative, E: allocative::Allocative, Ty"))]
 pub struct GraphMap<N, E, Ty> {
     nodes: IndexMap<N, Vec<(N, CompactDirection)>>,
     edges: IndexMap<(N, N), E>,
+    #[cfg_attr(feature = "profiling", allocative(skip))]
     ty: PhantomData<Ty>,
 }
 
@@ -74,6 +77,7 @@ impl<N: Eq + Hash + fmt::Debug, E: fmt::Debug, Ty: EdgeType> fmt::Debug for Grap
 pub trait NodeTrait: Copy + Ord + Hash {}
 impl<N> NodeTrait for N where N: Copy + Ord + Hash {}
 
+#[cfg_attr(feature = "profiling", derive(allocative::Allocative))]
 // non-repr(usize) version of Direction
 #[derive(Copy, Clone, Debug, PartialEq)]
 enum CompactDirection {
